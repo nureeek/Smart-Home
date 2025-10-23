@@ -3,8 +3,7 @@ import Decorators.*;
 import Objects.*;
 import interfaces.Device;
 import Facad.Facade;
-
-import java.sql.SQLOutput;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 public class Main {
@@ -19,18 +18,43 @@ public class Main {
 
 
     public static void main(String[]args) {
-        livingRoomLight = new Lights();
-        bedroomLight = new Lights();
-        kitchenLight = new Lights();
-        music = new Music();
         Scanner scanner = new Scanner(System.in);
-        garage = new Garage();
         db = new DatabaseManager();
+        db.setSessionStart(new Timestamp(System.currentTimeMillis()));
+
+        livingRoomLight = new EnergyUsageDecorator(
+                new MobileAppDecorator(
+                        new ScheduledDecorator(
+                                new MotionSensorDecorator(new Lights()
+                                )
+                        )
+                )
+        );
+        bedroomLight = new EnergyUsageDecorator(
+                new MobileAppDecorator(
+                        new ScheduledDecorator(
+                                new MotionSensorDecorator(new Lights()
+                                )
+                        )
+                )
+        );
+        kitchenLight = new EnergyUsageDecorator(
+                new MobileAppDecorator(
+                        new ScheduledDecorator(
+                                new MotionSensorDecorator(
+                                        new Lights()
+                                )
+                        )
+                )
+        );
+        music = new Music();
+        garage = new Garage();
+        kettle=new Kettle();
+
 
         home = new Facade(music, garage, kettle, livingRoomLight, kitchenLight, bedroomLight, db);
         musicControl(music,scanner);
         modeControl(scanner);
-        db.showAllEvents();
         scanner.close();
     }
     public static void musicControl(Device music, Scanner scanner) {
@@ -38,7 +62,11 @@ public class Main {
             System.out.println("Music control: 'next' > next song, 'prev' > previous song, 'pause' > stop, 'choose' > select song, 'exit' > leave from music control");
             String command = scanner.nextLine();
 
-            if (command.equalsIgnoreCase("next")) {
+            if (command.equalsIgnoreCase("on")) {
+                music.turnOn();
+            }else if (command.equalsIgnoreCase("off")) {
+                music.turnOff();
+            }else if (command.equalsIgnoreCase("next")) {
                 ((Music) music).nextSong();
             } else if (command.equalsIgnoreCase("prev")) {
                 ((Music) music).prevSong();
@@ -55,83 +83,55 @@ public class Main {
             }
         }
     }
-    public static void modeControl(Scanner scanner){
-                while (true) {
-                    System.out.println("Enter the number of claps to activate: 1-Party mode, 2-Night mode, 3-Leave home, 0-exit");
-                    System.out.println("Your choice: ");
-                    if(!scanner.hasNextInt()){
-                        String invalid=scanner.nextLine();
-                        System.out.println("Invalid input" + invalid );
-                        continue;
-                    }
-                    int numberOfClaps = scanner.nextInt();
-                    scanner.nextLine();
-                    if (numberOfClaps == 1) {
-                        home.startPartyMode(scanner);
-                    } else if (numberOfClaps == 2) {
-                        home.activateNightMode();
-                    } else if (numberOfClaps == 3) {
-                        home.leaveHome();
-                    } else if (numberOfClaps == 0) {
-                        System.out.println("Exiting");
-                        break;
-                    } else {
-                        System.out.println("Nothing to do");
-                    }
-                }
+    public static void modeControl(Scanner scanner) {
+        while (true) {
+            System.out.println("Enter the number of claps to activate: 1-Party mode, 2-Night mode, 3-Leave home, 0-exit");
+            System.out.println("Your choice: ");
+            if (!scanner.hasNextInt()) {
+                String invalid = scanner.nextLine();
+                System.out.println("Invalid input" + invalid);
+                continue;
+            }
+            int numberOfClaps = scanner.nextInt();
+            scanner.nextLine();
+            if (numberOfClaps == 1) {
 
 
+                home.startPartyMode(scanner);
 
-        Device livingRoomLight = new EnergyUsageDecorator(
-                new MobileAppDecorator(
-                        new ScheduledDecorator(
-                                new MotionSensorDecorator(new Lights())
-                        )
-                )
-        );
-
-        Device bedroomLight = new EnergyUsageDecorator(
-                new MobileAppDecorator(
-                        new ScheduledDecorator(
-                                new MotionSensorDecorator(new Lights()
-                        )
-                )
-        )
-        );
-        Device kitchenLight = new EnergyUsageDecorator(
-                new MobileAppDecorator(
-                        new ScheduledDecorator(
-                                new MotionSensorDecorator(
-                                        new Lights()
-                                )
-                        )
-                )
-        );
-
-
-        System.out.println("Operations for Living Room light ");
-        livingRoomLight.operation();
-
-        System.out.println("Operations for Bedroom light ");
-        bedroomLight.operation();
-
-        System.out.println("Operations for Kitchen Light ");
-        kitchenLight.operation();
+            } else if (numberOfClaps == 2) {
+                home.activateNightMode();
+            } else if (numberOfClaps == 3) {
+                home.leaveHome();
+            } else if (numberOfClaps == 0) {
+                System.out.println("Exiting");
+                break;
+            } else {
+                System.out.println("Nothing to do");
+            }
+        }
 
         System.out.println("Motion detection simulation ");
-        home.detectMotion(livingRoomLight,true);
-        home.detectMotion(bedroomLight,false);
+        home.detectMotion(livingRoomLight, true);
+        home.detectMotion(bedroomLight, false);
 
         livingRoomLight.operation();
         bedroomLight.operation();
         kitchenLight.operation();
-        db.showAllEvents();
+        db.showNewEvents();
 
-        System.out.println("Energu used summary");
-        printEnergyUsage("Living Room Light", livingRoomLight);
-        printEnergyUsage("Bedroom Light", bedroomLight);
-        printEnergyUsage("Kitchen Light", kitchenLight);
+        System.out.println("Motion detection check:");
+        ((MotionSensorDecorator)
+                ((ScheduledDecorator)
+                        ((MobileAppDecorator)
+                                ((EnergyUsageDecorator) livingRoomLight).getDecoratedDevice()
+                        ).getDecoratedDevice()
+                ).getDecoratedDevice()
+        ).detectMotion(true);
+
+        livingRoomLight.operation();
     }
+
     public static void printEnergyUsage(String name,Device device){
         double totalEnergy=findEnergyUsage(device);
         if(totalEnergy>=0){

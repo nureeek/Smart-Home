@@ -1,11 +1,13 @@
 package Database;
 
 import java.sql.*;
+import java.sql.Timestamp;
 
 public class DatabaseManager {
     private static final String url = "jdbc:postgresql://localhost:5432/smart_homee";
     private static final String user = "postgres";
     private static final String password = "kometa0707";
+    private Timestamp sessionStart;
 
     public DatabaseManager() {
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
@@ -44,13 +46,16 @@ public class DatabaseManager {
         }
     }
 
-
-    public void showAllEvents() {
-        String sql = "SELECT * FROM events ORDER BY timestamp DESC";
+    public void setSessionStart(Timestamp sessionStart) {
+        this.sessionStart = sessionStart;
+    }
+    public void showNewEvents() {
+        String sql = "SELECT * FROM events WHERE timestamp >= ? ORDER BY timestamp DESC";
         try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            System.out.println("Event log from postgresql:");
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setTimestamp(1, sessionStart);
+            ResultSet rs = pstmt.executeQuery();
+            System.out.println("Events added in this session:");
             while (rs.next()) {
                 System.out.printf("[%s] %s → %s%n",
                         rs.getTimestamp("timestamp"),
@@ -58,7 +63,8 @@ public class DatabaseManager {
                         rs.getString("action"));
             }
         } catch (SQLException e) {
-            System.out.println("️ Error reading events: " + e.getMessage());
+            System.out.println("Error reading events: " + e.getMessage());
         }
     }
+
 }

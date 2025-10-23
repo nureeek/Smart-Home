@@ -1,34 +1,55 @@
 package Objects;
-import interfaces.Device;
 
+import interfaces.Device;
 import java.util.Scanner;
 
 public class Music implements Device {
-    private String[] playlist = {"Жить в кайф", "Birthday", "Bipl", "Ait"};
-    private int curentSongIndex = 0;
+    private String[] playlist = {"Жить в кайф", "Birthday", "Bipl", "Ait","Disco"};
+    private int currentSongIndex = 0;
+    private boolean isOn = false;
 
     public void play() {
-        System.out.println("Playing song- " + playlist[curentSongIndex]);
+        if (!isOn) {
+            System.out.println("Music system is off please turn it");
+            return;
+        }
+        System.out.println("Playing song — " + playlist[currentSongIndex]);
     }
 
     public void nextSong() {
-        curentSongIndex = (curentSongIndex + 1) % playlist.length;
+        if (!isOn) {
+            System.out.println("Music system is off");
+            turnOn();
+        }
+        currentSongIndex = (currentSongIndex + 1) % playlist.length;
         play();
     }
 
     public void prevSong() {
-        curentSongIndex = (curentSongIndex - 1 + playlist.length) % playlist.length;
+        if (!isOn) {
+            System.out.println("Music system is off.");
+            return;
+        }
+        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
         play();
     }
 
     public void stop() {
-        System.out.println("Stopping " + playlist[curentSongIndex]);
+        if (!isOn) {
+            System.out.println("Music system is already off.");
+            return;
+        }
+        System.out.println("Stopping " + playlist[currentSongIndex]);
     }
 
     public void chooseSong(String songName) {
-        for (int i = 0; i <playlist.length;i++){
+        if (!isOn) {
+            System.out.println("Music system is off.");
+            return;
+        }
+        for (int i = 0; i < playlist.length; i++) {
             if (playlist[i].equalsIgnoreCase(songName)) {
-                curentSongIndex = i;
+                currentSongIndex = i;
                 play();
                 return;
             }
@@ -36,26 +57,53 @@ public class Music implements Device {
         System.out.println("Song not found: " + songName);
     }
 
-    public String[] getPlaylist(){
+    public String[] getPlaylist() {
         return playlist;
     }
+
     @Override
-    public void operation(){
-        System.out.println("Music play");
-    }
-    public String getName(){
-        return ("Music");
-    }
-    public String getCurrentSong(){
-        return playlist[curentSongIndex];
-    }
-    public void startWithSong(Scanner scanner){
-        System.out.println("Available songs: ");
-        for (String song : playlist){
-            System.out.println(" - "+ song);
+    public void operation() {
+        if (isOn) {
+            play();
+        } else {
+            System.out.println("Music system is off.");
         }
-        System.out.println("Enter the song name to play ");
-        String song =scanner.nextLine();
+    }
+
+    @Override
+    public void turnOn() {
+        isOn = true;
+        System.out.println("Music system now turned ON");
+    }
+
+    @Override
+    public void turnOff() {
+        isOn = false;
+        System.out.println("Music system turned OFF");
+    }
+
+    @Override
+    public boolean isOn() {
+        return isOn;
+    }
+
+    @Override
+    public String getName() {
+        return "Music";
+    }
+
+    public String getCurrentSong() {
+        return playlist[currentSongIndex];
+    }
+
+    public void startWithSong(Scanner scanner) {
+        System.out.println("Available songs:");
+        for (String song : playlist) {
+            System.out.println(" - " + song);
+        }
+        System.out.print("Enter the song name to play: ");
+        String song = scanner.nextLine();
+        turnOn();
         chooseSong(song);
     }
 }

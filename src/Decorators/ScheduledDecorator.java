@@ -23,6 +23,10 @@ public class ScheduledDecorator extends Decorator {
 
     @Override
     public String getName() {
-        return device.getName() + "Scheduled Control";
+        return device.getName() + " Scheduled Control";
     }
+    public Device getDecoratedDevice() {
+        return device;
+    }
+
 }

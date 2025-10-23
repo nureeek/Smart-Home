@@ -1,5 +1,7 @@
 package Facad;
 
+import Decorators.EnergyUsageDecorator;
+import Decorators.MobileAppDecorator;
 import Decorators.MotionSensorDecorator;
 import interfaces.Device;
 import Database.DatabaseManager;
@@ -136,7 +138,6 @@ public class Facade {
     }
     public void closeGarage() {
         System.out.println("Garage has been closed");
-        garage.operation();
         try {
             db.logEvent("Garage", "closed   ");
         } catch (SQLException e) {
@@ -145,8 +146,19 @@ public class Facade {
     }
     public void startPartyMode(Scanner scanner) {
         System.out.println("Party Mode has started");
+
+        if (livingRoomLight instanceof EnergyUsageDecorator) {
+            Device decorated = ((EnergyUsageDecorator) livingRoomLight).getDecoratedDevice();
+            if (decorated instanceof MobileAppDecorator) {
+                ((MobileAppDecorator) decorated).connectApp();
+            }
+        }
+
         livingRoomLight.operation();
+
+        music.turnOn();
         music.operation();
+
         garage.operation();
 
         Device current=music;
@@ -167,7 +179,7 @@ public class Facade {
             logEvents(
                     new String[][]{
                             {"Living Room Light", "Turned On (Party Mode)"},
-                            {"Music System", "Playing" + musicDevice.getCurrentSong() + "Turned On (Party Mode)"},
+                            {"Music System", "Playing " + musicDevice.getCurrentSong() + " Turned On (Party Mode)"},
                             {"Garage", "Opened (Party Mode)"}
                     }
             );
@@ -200,7 +212,7 @@ public class Facade {
                     new String[][]{
                             {"All Devices", "turned Off (Leaving home)"},
                             {"All Music ","turned Off (Leaving home)"},
-                            {"All Music ", "turned Off (Leaving home)"}
+                            {"Garage ", "closed (Leaving home)"}
                     }
             );
         }
