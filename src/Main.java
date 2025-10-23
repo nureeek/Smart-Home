@@ -22,33 +22,41 @@ public class Main {
         db = new DatabaseManager();
         db.setSessionStart(new Timestamp(System.currentTimeMillis()));
 
-        livingRoomLight = new EnergyUsageDecorator(
-                new MobileAppDecorator(
-                        new ScheduledDecorator(
-                                new MotionSensorDecorator(new Lights()
-                                )
+        livingRoomLight = new MotionSensorDecorator(
+                new EnergyUsageDecorator(
+                        new MobileAppDecorator(
+                                new ScheduledDecorator(new Lights())
                         )
                 )
         );
-        bedroomLight = new EnergyUsageDecorator(
-                new MobileAppDecorator(
-                        new ScheduledDecorator(
-                                new MotionSensorDecorator(new Lights()
-                                )
+
+        bedroomLight = new MotionSensorDecorator(
+                new EnergyUsageDecorator(
+                        new MobileAppDecorator(
+                                new ScheduledDecorator(new Lights())
                         )
                 )
         );
-        kitchenLight = new EnergyUsageDecorator(
-                new MobileAppDecorator(
-                        new ScheduledDecorator(
-                                new MotionSensorDecorator(
-                                        new Lights()
-                                )
+
+        kitchenLight = new MotionSensorDecorator(
+                new EnergyUsageDecorator(
+                        new MobileAppDecorator(
+                                new ScheduledDecorator(new Lights())
                         )
                 )
         );
-        music = new Music();
-        garage = new Garage();
+
+        music = new MotionSensorDecorator(
+                new EnergyUsageDecorator(
+                        new MobileAppDecorator(new Music())
+                )
+        );
+
+        garage = new MotionSensorDecorator(
+                new EnergyUsageDecorator(
+                        new MobileAppDecorator(new Garage())
+                )
+        );
         kettle=new Kettle();
 
 
@@ -113,42 +121,17 @@ public class Main {
 
         System.out.println("Motion detection simulation ");
         home.detectMotion(livingRoomLight, true);
-        home.detectMotion(bedroomLight, false);
-
-        livingRoomLight.operation();
-        bedroomLight.operation();
-        kitchenLight.operation();
+        home.detectMotion(bedroomLight, true);
+        home.detectMotion(kitchenLight, true);
+        home.detectMotion(music, true);
+        home.detectMotion(garage, true);
         db.showNewEvents();
 
-        System.out.println("Motion detection check:");
-        ((MotionSensorDecorator)
-                ((ScheduledDecorator)
-                        ((MobileAppDecorator)
-                                ((EnergyUsageDecorator) livingRoomLight).getDecoratedDevice()
-                        ).getDecoratedDevice()
-                ).getDecoratedDevice()
-        ).detectMotion(true);
 
+
+        System.out.println("Motion detection check:");
+        ((MotionSensorDecorator) livingRoomLight).detectMotion(true);
         livingRoomLight.operation();
     }
-
-    public static void printEnergyUsage(String name,Device device){
-        double totalEnergy=findEnergyUsage(device);
-        if(totalEnergy>=0){
-            System.out.println(name + ": "+ String.format("%.2f",totalEnergy)+ " kwh used");
-            db.saveEnergyUsage(name,totalEnergy);
-        }
-        else {
-            System.out.println(name + "No energy data available");
-        }
-
-    }
-    public static double findEnergyUsage(Device device) {
-        if (device instanceof EnergyUsageDecorator) {
-            return ((EnergyUsageDecorator) device).getEnergyUsage();
-        } else if (device instanceof DeviceDecorator) {
-            return findEnergyUsage(((DeviceDecorator) device).getDecoratedDevice());
-        }
-        return -1;
 }
-    }
+

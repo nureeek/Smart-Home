@@ -14,14 +14,11 @@ public class EnergyUsageDecorator extends DeviceDecorator {
     public void operation() {
         if (!decoratedDevice.isOn()) {
             decoratedDevice.turnOn();
-            decoratedDevice.operation();
-            if (!energyCounted) {
-                energyUsage += 5.1;
-                System.out.println(decoratedDevice.getName() + " EnergyUsage: " + energyUsage + " kWh");
-                energyCounted = true;
-            }
+            energyUsage += 5.1;
+            System.out.println(decoratedDevice.getName() + " EnergyUsage: " + energyUsage + " kWh");
         }
     }
+
 
 
 
@@ -40,10 +37,13 @@ public class EnergyUsageDecorator extends DeviceDecorator {
         return decoratedDevice.getName()+" + Energy Usage Tracking";
     }
     @Override
-    public void turnOn(){
-        decoratedDevice.turnOn();
-        trackEnergyUsage();
+    public void turnOn() {
+        if (!decoratedDevice.isOn()) {
+            decoratedDevice.turnOn();
+            trackEnergyUsage();
+        }
     }
+
     @Override
     public void turnOff(){
         decoratedDevice.turnOff();

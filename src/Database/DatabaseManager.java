@@ -17,19 +17,22 @@ public class DatabaseManager {
         }
     }
 
-    public void logEvent(String device, String action) throws SQLException {
-        String sql = "INSERT INTO Events(device, action) VALUES(?, ?)";
+    public void logEvent(String device, String action,double energyusage) throws SQLException {
+        String sql = "INSERT INTO Events(device, action,energyusage) VALUES(?, ?,?)";
         try (Connection conn = DriverManager.getConnection(url, user, password);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, device);
             pstmt.setString(2, action);
+            pstmt.setDouble(3, energyusage);
             pstmt.executeUpdate();
             System.out.println("Saved event: " + device + " → " + action);
         } catch (SQLException e) {
             System.out.println(" Error inserting event: " + e.getMessage());
         }
     }
-
+    public void logEvent(String device, String action) throws SQLException {
+        logEvent(device, action, 0.0);
+    }
     public void saveEnergyUsage(String deviceName, double energyUsage) {
         String sql = "INSERT INTO events(device,action,energyusage) VALUES(?, ?,?)";
         try (Connection conn = DriverManager.getConnection(url, user, password);
@@ -60,7 +63,8 @@ public class DatabaseManager {
                 System.out.printf("[%s] %s → %s%n",
                         rs.getTimestamp("timestamp"),
                         rs.getString("device"),
-                        rs.getString("action"));
+                        rs.getString("action"),
+                        rs.getDouble("energyusage"));
             }
         } catch (SQLException e) {
             System.out.println("Error reading events: " + e.getMessage());

@@ -10,10 +10,8 @@ public class MobileAppDecorator extends Decorator {
     @Override
     public void operation() {
         if (isConnected) {
-            System.out.println("Mobile App controlling: " + device.getName());
 
-        } else {
-            System.out.println("Mobile App not connected to " + device.getName());
+
         }
     }
     public void connectApp() {

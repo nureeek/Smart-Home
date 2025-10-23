@@ -16,18 +16,13 @@ public class Lights implements Device {
         isBroken=false;
     }
     @Override
-    public void turnOn(){
-        if (isBroken){
-            System.out.println("Cant turn on,lights is burned out");
-            return;
-        }
-        if(isOn){
-            isOn=true;
-            System.out.println("Lights are now ON");
-        }else{
-            System.out.println("Lights are already On");
+    public void turnOn() {
+        if (!isOn) {
+            isOn = true;
+            System.out.println("Lights turned On");
         }
     }
+
     @Override
     public void turnOff(){
         if (isOn){
@@ -43,12 +38,7 @@ public class Lights implements Device {
     }
     @Override
     public void operation(){
-        if(isOn){
-            System.out.println("Lights is already on");
-        }
-        else{
-            System.out.println("Lights is now on");
-        }
+        turnOn();
     }
 
     @Override
