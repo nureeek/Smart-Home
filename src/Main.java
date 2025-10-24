@@ -25,7 +25,7 @@ public class Main {
         livingRoomLight = new MotionSensorDecorator(
                 new EnergyUsageDecorator(
                         new MobileAppDecorator(
-                                new ScheduledDecorator(new Lights())
+                                (new Lights())
                         )
                 )
         );
@@ -33,7 +33,7 @@ public class Main {
         bedroomLight = new MotionSensorDecorator(
                 new EnergyUsageDecorator(
                         new MobileAppDecorator(
-                                new ScheduledDecorator(new Lights())
+                                (new Lights())
                         )
                 )
         );
@@ -41,22 +41,13 @@ public class Main {
         kitchenLight = new MotionSensorDecorator(
                 new EnergyUsageDecorator(
                         new MobileAppDecorator(
-                                new ScheduledDecorator(new Lights())
+                                (new Lights())
                         )
                 )
         );
 
-        music = new MotionSensorDecorator(
-                new EnergyUsageDecorator(
-                        new MobileAppDecorator(new Music())
-                )
-        );
-
-        garage = new MotionSensorDecorator(
-                new EnergyUsageDecorator(
-                        new MobileAppDecorator(new Garage())
-                )
-        );
+        music = new Music();
+        garage = new Garage();
         kettle=new Kettle();
 
 
@@ -67,7 +58,11 @@ public class Main {
     }
     public static void musicControl(Device music, Scanner scanner) {
         while (true) {
-            System.out.println("Music control: 'next' > next song, 'prev' > previous song, 'pause' > stop, 'choose' > select song, 'exit' > leave from music control");
+            System.out.println("Music control: 'next' > next song \n" +
+                    " 'prev' > previous song \n" +
+                    " 'pause' > stop \n " +
+                    "'choose' > select song \n" +
+                    " 'exit' > leave from music control");
             String command = scanner.nextLine();
 
             if (command.equalsIgnoreCase("on")) {

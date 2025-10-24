@@ -11,32 +11,32 @@ public class MotionSensorDecorator extends DeviceDecorator {
     @Override
     public void operation() {
         if (motionDetected) {
-            System.out.println("Motion Detected → LIGHT ON: " + decoratedDevice.getName());
-            decoratedDevice.operation();
+            System.out.println("Motion Detected → LIGHT ON: " + device.getName());
+            device.operation();
         } else {
-            System.out.println("No Motion → LIGHT OFF: " + decoratedDevice.getName());
-            decoratedDevice.operation();
+            System.out.println("No Motion → LIGHT OFF: " + device.getName());
+            device.operation();
         }
     }
 
     @Override
     public void turnOn() {
-        decoratedDevice.turnOn();
+        device.turnOn();
     }
 
     @Override
     public void turnOff() {
-        decoratedDevice.turnOff();
+        device.turnOff();
     }
 
     @Override
     public boolean isOn() {
-        return decoratedDevice.isOn();
+        return device.isOn();
     }
 
     @Override
     public String getName() {
-        return decoratedDevice.getName() + " Motion Sensor";
+        return device.getName() + " Motion Sensor";
     }
 
     public void detectMotion(boolean detected) {
@@ -45,6 +45,6 @@ public class MotionSensorDecorator extends DeviceDecorator {
     }
 
     public Device getDecoratedDevice() {
-        return decoratedDevice;
+        return device;
     }
 }

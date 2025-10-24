@@ -1,6 +1,6 @@
 package Decorators;
 import interfaces.Device;
-public class MobileAppDecorator extends Decorator {
+public class MobileAppDecorator extends DeviceDecorator {
     private boolean isConnected;
 
     public MobileAppDecorator(Device device) {
@@ -14,6 +14,22 @@ public class MobileAppDecorator extends Decorator {
 
         }
     }
+
+    @Override
+    public void turnOn() {
+        device.turnOn();
+    }
+
+    @Override
+    public void turnOff() {
+        device.turnOff();
+    }
+
+    @Override
+    public boolean isOn() {
+        return device.isOn();
+    }
+
     public void connectApp() {
         if (!isConnected) {
             isConnected = true;

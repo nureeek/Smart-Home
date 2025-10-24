@@ -165,9 +165,7 @@ public class Facade {
         }
 
 
-        livingRoomLight.operation();
-        bedroomLight.operation();
-        kitchenLight.operation();
+
 
         music.turnOn();
         music.operation();

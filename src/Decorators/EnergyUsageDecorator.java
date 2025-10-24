@@ -8,49 +8,44 @@ public class EnergyUsageDecorator extends DeviceDecorator {
         super(decoratedDevice);
     }
 
-    private boolean energyCounted = false;
-
     @Override
     public void operation() {
-        if (!decoratedDevice.isOn()) {
-            decoratedDevice.turnOn();
-            energyUsage += 5.1;
-            System.out.println(decoratedDevice.getName() + " EnergyUsage: " + energyUsage + " kWh");
+        if (!device.isOn()) {
+            device.turnOn();
+            energyUsage+= Math.random()*3+1;
+            System.out.println(device.getName() + " EnergyUsage: " + energyUsage + " kWh");
         }
     }
 
 
 
 
-    public void trackEnergyUsage(){
-        energyUsage+= Math.random()*3+1;
-    }
     public double getEnergyUsage(){
         return energyUsage;
     }
     @Override
     public boolean isOn() {
-        return decoratedDevice.isOn();
+        return device.isOn();
     }
     @Override
     public String getName(){
-        return decoratedDevice.getName()+" + Energy Usage Tracking";
+        return device.getName()+" + Energy Usage Tracking";
     }
     @Override
     public void turnOn() {
-        if (!decoratedDevice.isOn()) {
-            decoratedDevice.turnOn();
-            trackEnergyUsage();
+        if (!device.isOn()) {
+            device.turnOn();
+
         }
     }
 
     @Override
     public void turnOff(){
-        decoratedDevice.turnOff();
+        device.turnOff();
     }
 
     public Device getDecoratedDevice(){
-        return decoratedDevice;
+        return device;
     }
 
 

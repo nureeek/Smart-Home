@@ -3,18 +3,18 @@ package Decorators;
 import interfaces.Device;
 
 public abstract class DeviceDecorator implements Device {
-    protected Device decoratedDevice;
+    protected Device device;
 
     public DeviceDecorator(Device decoratedDevice) {
-        this.decoratedDevice = decoratedDevice;
+        this.device = decoratedDevice;
     }
 
     @Override
     public void operation() {
-        decoratedDevice.operation();
+        device.operation();
     }
 
     public Device getDecoratedDevice() {
-        return decoratedDevice;
+        return device;
     }
 }
